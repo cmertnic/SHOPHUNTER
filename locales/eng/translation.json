@@ -1,0 +1,24 @@
+{
+    "settings": {
+        "current_settings": "Your current settings",
+        "language": "Language",
+        "not_set": "not set",
+        "choose_option": "Choose what you want to change:",
+        "change_language": "Change language",
+        "other_settings_not_implemented": "Other settings not implemented yet.",
+        "back": "Back",
+        "language_changed": "Language changed to {{language}}."
+    },
+    "start": {
+        "welcome": {
+            "message": "Welcome to our bot!",
+            "introduction": "I'm here to help you with your queries.",
+            "main_features": "Main features",
+            "help_command": "Get help on using the bot.",
+            "settings_command": "Configure your usage settings."
+        },
+        "error": {
+            "general": "An error has occurred. Please try again later."
+        }
+    }
+}
