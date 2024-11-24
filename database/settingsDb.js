@@ -26,8 +26,9 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CR
 
 // Создаем таблицу user_settings, если она еще не создана
 db.run(`CREATE TABLE IF NOT EXISTS user_settings (
-    userId TEXT PRIMARY KEY,
-    language TEXT
+  userId TEXT PRIMARY KEY,
+  language TEXT,
+  location TEXT
 );`, (err) => {
   if (err) {
     console.error(`Ошибка при создании таблицы user_settings: ${err.message}`);
@@ -39,12 +40,12 @@ db.run(`CREATE TABLE IF NOT EXISTS user_settings (
 // Функция для сохранения настроек пользователя в базе данных
 function saveUserSettings(userId, settings) {
   return new Promise((resolve, reject) => {
-    const { language } = settings;
+    const { language, location } = settings;
 
     db.run(`REPLACE INTO user_settings
-        (userId, language)
-        VALUES (?, ?)`,
-      [userId, language], (err) => {
+            (userId, language, location)
+            VALUES (?, ?, ?)`,
+      [userId, language, JSON.stringify(location)], (err) => {
         if (err) {
           console.error(`Ошибка при сохранении настроек пользователя: ${err.message}`);
           reject(err);
@@ -76,7 +77,8 @@ async function initializeDefaultUserSettings(userId) {
     const settings = await getUserSettings(userId);
     if (!settings.language) {
       const defaultSettings = {
-        language: process.env.LANGUAGE || 'rus'
+        language: process.env.LANGUAGE || 'rus',
+        location: null, // Устанавливаем местоположение по умолчанию как null
       };
 
       // Сохраняем настройки по умолчанию
@@ -85,6 +87,19 @@ async function initializeDefaultUserSettings(userId) {
     }
   } catch (err) {
     console.error(`Ошибка при инициализации настроек пользователя: ${err.message}`);
+    throw err;
+  }
+}
+
+// Функция для обновления местоположения пользователя
+async function updateUserLocation(userId, location) {
+  try {
+    const settings = await getUserSettings(userId); // Получаем текущие настройки пользователя
+    settings.location = location; // Обновляем местоположение
+    await saveUserSettings(userId, settings); // Сохраняем обновленные настройки
+    console.log(`Местоположение пользователя ${userId} обновлено: ${JSON.stringify(location)}`);
+  } catch (err) {
+    console.error(`Ошибка при обновлении местоположения пользователя: ${err.message}`);
     throw err;
   }
 }
@@ -105,5 +120,6 @@ module.exports = {
   saveUserSettings,
   initializeDefaultUserSettings,
   getUserSettings,
-  updateUserSettings // Экспортируем новую функцию
+  updateUserSettings,
+  updateUserLocation
 };

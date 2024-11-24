@@ -15,6 +15,7 @@ module.exports = {
                 \n**${i18next.t('start.welcome.main_features')}:**
                 \n1. /help - ${i18next.t('start.welcome.help_command')}
                 \n2. /settings - ${i18next.t('start.welcome.settings_command')}
+                \n3. /location - ${i18next.t('start.welcome.location_command')}
             `;
             
             await bot.sendMessage(chatId, welcomeMessage, { parse_mode: 'Markdown' });
