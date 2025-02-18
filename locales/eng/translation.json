@@ -1,0 +1,47 @@
+{
+    "settings": {
+        "current_settings": "Your current settings",
+        "language": "Language",
+        "not_set": "not set",
+        "choose_option": "Choose what you want to change:",
+        "change_language": "Change language",
+        "other_settings_not_implemented": "Other settings not yet implemented.",
+        "back": "Back",
+        "language_changed": "Language changed to {{language}}.",
+        "coordinate": "your coordinates are "
+    },
+    "start": {
+        "welcome": {
+            "message": "Welcome to our bot!",
+            "introduction": "I'm here to help you with your queries.",
+            "main_features": "Main features",
+            "help_command": "Get help on using the bot.",
+            "settings_command": "Configure your usage settings.",
+            "location_command": "Specify your location for search."
+        },
+        "error": {
+            "general": "An error has occurred. Please try again later."
+        }
+    },
+    "location": {
+        "prompt": "Please note: the location sending feature is only available in the Telegram mobile app. You can enter your location manually.",
+        "send_location": "Send location",
+        "enter_location_manually": "Enter location manually",
+        "choose_option": "Choose an option:",
+        "enter_location": "Please enter your location for example: Moscow, Russia, Nikolskaya street",
+        "location_saved": "Your location has been saved: {{location}}"
+    },
+    "search": {
+        "no_results": "product not found"
+    },
+    "error": {
+        "location_update": "There was an error updating your location.",
+        "command_execution": "Error executing command."
+    },
+    "response": {
+        "unknown_command": "Unknown command."
+    },
+    "menu": {
+        "loading": "Loading..."
+    }
+}
