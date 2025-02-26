@@ -15,9 +15,14 @@
             "message": "Welcome to our bot!",
             "introduction": "I'm here to help you with your queries.",
             "main_features": "Main features",
-            "help_command": "Get help on using the bot.",
-            "settings_command": "Configure your usage settings.",
-            "location_command": "Specify your location for search."
+            "settings_command": "Settings",
+            "location_command": "Location",
+            "help_command": "help",
+            "search_command": "search",
+            "settings_command_description": "Your local settings",
+            "location_command_description": "Your location",
+            "help_command_description": "bot support and assistance with commands",
+            "search_command_description": "product - product search"
         },
         "error": {
             "general": "An error has occurred. Please try again later."
@@ -32,7 +37,26 @@
         "location_saved": "Your location has been saved: {{location}}"
     },
     "search": {
-        "no_results": "product not found"
+        "no_results": "product not found",
+        "cost": "price",
+        "of": "of",
+        "product": "product",
+        "previous": "back",
+        "next": "next",
+        "sort_ascending": "sort in ascending order",
+        "sort_descending": "sort in descending order",
+        "open_product": "open product"
+    },
+    "help": {
+        "commands": "📜 *Available commands:*",
+        "settings_description": "Change the language or your geolocation",
+        "location_description": "Set or change your location.",
+        "search_description": "Search for goods using /search item",
+        "start_description": "Home page with commands",
+        "help_description": "Description of commands and details",
+        "contact_info": "📞 *Contact information:*",
+        "contact_info_test": "If you have any questions or need help, you can contact us at the following address: \n- Email: skytinleonid@gmail.com \n- Telegram: https://t.me/lcmertnicl ",
+        "thank_you": "*Thank you for using the bot!*"
     },
     "error": {
         "location_update": "There was an error updating your location.",

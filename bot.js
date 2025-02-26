@@ -40,7 +40,6 @@ bot.on('callback_query', async (query) => {
     await bot.answerCallbackQuery(query.id);
 });
 
-// Обработка ошибок при работе с ботом
 bot.on('polling_error', (error) => {
     console.error(`Ошибка при работе с ботом: ${error.message}`);
 });
@@ -52,10 +51,18 @@ bot.on('text', async (msg) => {
     const messageText = msg.text;
 
     try {
-        const userSettings = await getUserSettings(userId); // Получаем настройки пользователя
+        const userSettings = await getUserSettings(userId); 
 
         if (messageText === i18next.t('settings.change_language')) {
             await changeLanguage(bot, chatId);
+        }else if (messageText === i18next.t('start.welcome.settings_command')) {
+            await commands['/settings'].execute(bot, chatId);
+        }else if (messageText === i18next.t('start.welcome.help_command')) {
+            await commands['/help'].execute(bot, chatId);
+        }else if (messageText === i18next.t('start.welcome.search_command')) {
+            await commands['/search'].execute(bot, chatId);
+        }else if (messageText === i18next.t('start.welcome.location_command')) {
+            await commands['/location'].execute(bot, chatId);
         } else if (messageText === i18next.t('settings.back')) {
             await commands['/start'].execute(bot, chatId);
         } else if (messageText === i18next.t('location.enter_location_manually')) {
@@ -150,3 +157,5 @@ bot.on('location', async (msg) => {
         await bot.sendMessage(chatId, i18next.t('error.saving_location'));
     }
 });
+
+module.exports = commands;

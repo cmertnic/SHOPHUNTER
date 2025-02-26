@@ -2,28 +2,24 @@ const { i18next, updateI18nextLanguage } = require('../../i18n');
 const { getUserSettings } = require('../../database/settingsDb');
 const axios = require('axios');
 const {
-  handleTextMessage,
   searchProductNearby,
   getUserLocation,
-  changeLanguage,
-  sendMainMenu,
-  handleManualLocationInput
+  parsePrice
 } = require('../../events');
 
 module.exports = {
   name: '/search',
   execute: async (bot, chatId, userId, productName) => {
+
+    const userSettings = await getUserSettings(userId);
+    await updateI18nextLanguage(chatId, userSettings.language);
     try {
-      const userSettings = await getUserSettings(userId);
-      await updateI18nextLanguage(chatId, userSettings.language);
-
       const userLocation = await getUserLocation(userId);
-      if (!userLocation) {
-        await bot.sendMessage(chatId, i18next.t('error.no_location'));
-        return;
-      }
 
-      const results = await searchProductNearby(productName);
+      const results = productName
+        ? await searchProductNearby(productName)
+        : await searchProductNearby(null, 100);
+
       if (!Array.isArray(results) || results.length === 0) {
         console.error(`Результат поиска не является массивом или пуст: ${JSON.stringify(results)}`);
         await bot.sendMessage(chatId, i18next.t('search.no_results'));
@@ -41,58 +37,76 @@ module.exports = {
 async function sendProductCards(bot, chatId, products) {
   const totalProducts = products.length;
   let currentIndex = 0;
-  let lastMessageId = null; // Переменная для хранения ID последнего сообщения
+  let lastMessageId = null;
 
   const sendCard = async (index) => {
     const product = products[index];
     const responseMessage = `
+      ${product.img ? `<a href="${product.img}">&#8203;</a>` : ''}
       <b>${product.name}</b>
-      <i>Цена: ${product.price} ₽</i>
-      ${product.description ? `<i>Описание: ${product.description}</i>` : ''}
-      <i>Ссылка на товар: <a href="${product.url}">${product.url}</a></i>
+      <b>${i18next.t('search.cost')}:</b> <i>${product.price}</i>
     `;
-
-    const options = {
+  
+    const inlineOptions = {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: 'Товар ' + (index + 1) + ' из ' + totalProducts, callback_data: 'no_action' },
+            { text: `${i18next.t('search.product')} ${index + 1} ${i18next.t('search.of')} ${totalProducts}`, callback_data: 'no_action' },
           ],
           [
-            { text: 'Предыдущий', callback_data: 'prev' },
-            { text: 'Следующий', callback_data: 'next' },
+            { text: i18next.t('search.previous'), callback_data: 'prev' },
+            { text: i18next.t('search.next'), callback_data: 'next' },
           ],
           [
-            { text: 'Сортировать по возрастанию', callback_data: 'sort_asc' },
-            { text: 'Сортировать по убыванию', callback_data: 'sort_desc' },
+            { text: i18next.t('search.sort_ascending'), callback_data: 'sort_asc' },
+            { text: i18next.t('search.sort_descending'), callback_data: 'sort_desc' },
           ],
           [
-            { text: 'Открыть товар', url: product.url },
+            { text: i18next.t('search.open_product'), url: product.url },
           ],
         ],
       },
     };
-
-    if (lastMessageId === null) {
-      const sentMessage = await bot.sendMessage(chatId, responseMessage, { parse_mode: 'HTML', reply_markup: options.reply_markup });
-      lastMessageId = sentMessage.message_id; // Сохраняем ID отправленного сообщения
-    } else {
-      try {
+  
+    const keyboardOptions = {
+      reply_markup: {
+        keyboard: [
+          [
+            {
+              text: i18next.t('settings.back'),
+            },
+          ],
+        ],
+        resize_keyboard: true,
+        one_time_keyboard: true,
+      },
+    };
+  
+    try {
+      if (lastMessageId === null) {
+        // Отправка сообщения с inline_keyboard
+        const sentMessage = await bot.sendMessage(chatId, responseMessage, {
+          parse_mode: 'HTML',
+          reply_markup: inlineOptions.reply_markup,
+        });
+        lastMessageId = sentMessage.message_id;
+  
+        // Отправка второго сообщения с обычной клавиатурой
+        await bot.sendMessage(chatId, i18next.t('.'), keyboardOptions);
+      } else {
+        // Обновление первого сообщения с inline_keyboard
         await bot.editMessageText(responseMessage, {
           chat_id: chatId,
           message_id: lastMessageId,
           parse_mode: 'HTML',
-          reply_markup: options.reply_markup,
+          reply_markup: inlineOptions.reply_markup,
         });
-      } catch (error) {
-        console.error(`Ошибка при редактировании сообщения: ${error.message}`);
-        // Если редактирование не удалось, отправляем новое сообщение
-        const sentMessage = await bot.sendMessage(chatId, responseMessage, { parse_mode: 'HTML', reply_markup: options.reply_markup });
-        lastMessageId = sentMessage.message_id; // Обновляем ID на новый
       }
+    } catch (error) {
+      console.error(`Ошибка при отправке сообщений: ${error.message}`);
     }
   };
-
+  
   const navigateProducts = async () => {
     await sendCard(currentIndex);
   };
@@ -106,22 +120,20 @@ async function sendProductCards(bot, chatId, products) {
         currentIndex++;
         await sendCard(currentIndex);
       } else if (query.data === 'sort_asc') {
-        products.sort((a, b) => a.price - b.price); // Сортировка по возрастанию
-        currentIndex = 0; // Сбрасываем индекс
+        products.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+        currentIndex = 0;
         await sendCard(currentIndex);
       } else if (query.data === 'sort_desc') {
-        products.sort((a, b) => b.price - a.price); // Сортировка по убыванию
-        currentIndex = 0; // Сбрасываем индекс
+        products.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+        currentIndex = 0;
         await sendCard(currentIndex);
       }
       await bot.answerCallbackQuery(query.id);
     } catch (error) {
       console.error(`Ошибка при обработке callback_query: ${error.message}`);
-      await bot.sendMessage(chatId, 'Произошла ошибка при обновлении информации о товаре. Пожалуйста, попробуйте еще раз позже.'); // Уведомляем пользователя
+      await bot.sendMessage(chatId, i18next.t('error.callback_processing'));
     }
   });
 
-  // Отправляем первую карточку при инициализации
   await navigateProducts();
 }
-

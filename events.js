@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
-const { i18next, initializeI18next, updateI18nextLanguage } = require('./i18n');
+const { i18next,updateI18nextLanguage } = require('./i18n');
 const { updateUserSettings, getUserSettings, updateUserLocation } = require('./database/settingsDb');
 
 // Функция для получения координат из Nominatim
@@ -128,34 +128,50 @@ async function getUserLocation(userId) {
 
 
 // Функция для поиска товара
-async function searchProductNearby(productName) {
+async function searchProductNearby(productName, limit = 100) {
     const apiUrl = 'http://localhost:3000/products/all';
-  
+
     try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-  
-      // Фильтруем данные по имени товара
-      const filteredData = data.products.filter(item => 
-        item.name.toLowerCase().includes(productName.toLowerCase())
-      ).map(item => ({
-        id: item.id, 
-        name: item.name,
-        price: item.price,
-        description: item.description || 'Нет описания', 
-        url: item.url,
-      }));
-  
-      return filteredData;
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Если productName не передан
+        if (!productName || productName.trim() === '') {
+            return data.products.slice(0, limit).map(item => ({
+                id: item.id, 
+                name: item.name,
+                price: item.price,
+                url: item.url,
+                img: item.img, 
+            }));
+        }
+
+        // Фильтруем данные по имени товара
+        const filteredData = data.products.filter(item => 
+            item.name.toLowerCase().includes(productName.toLowerCase())
+        ).map(item => ({
+            id: item.id, 
+            name: item.name,
+            price: item.price,
+            url: item.url,
+            img: item.img, 
+        }));
+
+        return filteredData;
     } catch (error) {
-      console.error(`Ошибка при поиске товара: ${error.message}`);
-      return [];
+        console.error(`Ошибка при поиске товара: ${error.message}`);
+        return [];
     }
-  }
+}
+  // Функция для извлечения числовой цены из строки
+const parsePrice = (priceString) => {
+    const priceNumber = parseFloat(priceString.replace(/[^\d.-]/g, ''));
+    return isNaN(priceNumber) ? 0 : priceNumber; 
+  };
   
 // Экспортируем функции для использования в других модулях
 module.exports = {
@@ -165,5 +181,6 @@ module.exports = {
     handleManualLocationInput,
     getCoordinatesFromNominatim,
     searchProductNearby,
-    getUserLocation
+    getUserLocation,
+    parsePrice
 };

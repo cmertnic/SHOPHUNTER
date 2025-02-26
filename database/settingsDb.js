@@ -3,19 +3,15 @@ const dotenv = require('dotenv');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 
-// Загружаем переменные окружения из файла .env
 dotenv.config();
 
-// Проверяем наличие переменной окружения SQLITE_SETTINGS_DB_PATH
 if (!process.env.SQLITE_SETTINGS_DB_PATH) {
   console.error('Переменная окружения SQLITE_SETTINGS_DB_PATH не определена.');
   process.exit(1);
 }
 
-// Получаем путь к базе данных из переменной окружения
 const dbPath = path.resolve(process.env.SQLITE_SETTINGS_DB_PATH);
 
-// Создаем новое подключение к базе данных
 const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
   if (err) {
     console.error(`Ошибка при подключении к базе данных: ${err.message}`);
@@ -24,7 +20,6 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CR
   console.log('Подключено к базе данных настроек');
 });
 
-// Создаем таблицу user_settings, если она еще не создана
 db.run(`CREATE TABLE IF NOT EXISTS user_settings (
   userId TEXT PRIMARY KEY,
   language TEXT,
@@ -81,7 +76,6 @@ async function initializeDefaultUserSettings(userId) {
         location: process.env.LOCATION || null, 
       };
 
-      // Сохраняем настройки по умолчанию
       await saveUserSettings(userId, defaultSettings);
       console.log(`Настройки по умолчанию инициализированы для пользователя: ${userId}`);
     }
@@ -94,9 +88,9 @@ async function initializeDefaultUserSettings(userId) {
 // Функция для обновления местоположения пользователя
 async function updateUserLocation(userId, location) {
   try {
-    const settings = await getUserSettings(userId); // Получаем текущие настройки пользователя
-    settings.location = location; // Обновляем местоположение
-    await saveUserSettings(userId, settings); // Сохраняем обновленные настройки
+    const settings = await getUserSettings(userId); 
+    settings.location = location; 
+    await saveUserSettings(userId, settings); 
     console.log(`Местоположение пользователя ${userId} обновлено: ${JSON.stringify(location)}`);
   } catch (err) {
     console.error(`Ошибка при обновлении местоположения пользователя: ${err.message}`);

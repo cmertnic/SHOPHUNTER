@@ -1,11 +1,10 @@
 const { updateI18nextLanguage, i18next } = require('../../i18n');
-const { initializeDefaultUserSettings, getUserSettings, updateUserSettings } = require('../../database/settingsDb');
-const { handleTextMessage } = require('../../events');
+const { initializeDefaultUserSettings, getUserSettings } = require('../../database/settingsDb');
 
 module.exports = {
     name: '/settings',
     async execute(bot, chatId) {
-        const userId = chatId; // Используем chatId как userId
+        const userId = chatId; 
         let userSettings = await getUserSettings(userId);
 
         if (!userSettings) {
@@ -16,7 +15,6 @@ module.exports = {
 
         await updateI18nextLanguage(chatId, userSettings.language || 'rus');
 
-        // Извлечение местоположения
         const location = userSettings.location ? userSettings.location : i18next.t('settings.not_set');
 
         const response = `
@@ -30,10 +28,15 @@ module.exports = {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: i18next.t('settings.change_language') }, // Кнопка для изменения языка
+                        { text: i18next.t('settings.change_language') }, 
                     ],
                     [
-                        { text: i18next.t('settings.back') }, // Кнопка "Назад"
+                        {
+                            text: i18next.t('start.welcome.location_command')
+                        }
+                    ],
+                    [
+                        { text: i18next.t('settings.back') }, 
                     ],
                 ],
                 resize_keyboard: true,
@@ -41,7 +44,6 @@ module.exports = {
             },
         };
 
-        // Отправляем сообщение с текущими настройками
         await bot.sendMessage(chatId, response, { parse_mode: 'Markdown', ...keyboard });
     },
 };
