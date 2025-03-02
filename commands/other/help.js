@@ -1,5 +1,5 @@
 const { updateI18nextLanguage, i18next } = require('../../i18n');
-const { getUserSettings} = require('../../database/settingsDb');
+const { getUserSettings } = require('../../database/settingsDb');
 module.exports = {
     name: '/help',
     async execute(bot, chatId, userId) {
@@ -21,14 +21,14 @@ ${i18next.t('help.contact_info')}
         ${i18next.t('help.contact_info_text')}
 
        
-                             ${i18next.t('help.thank_you')}
+                                         ${i18next.t('help.thank_you')}
         `;
 
         const keyboard = {
             reply_markup: {
                 keyboard: [
                     [
-                        { text: i18next.t('settings.back') }, 
+                        { text: i18next.t('settings.back') },
                     ],
                 ],
                 resize_keyboard: true,

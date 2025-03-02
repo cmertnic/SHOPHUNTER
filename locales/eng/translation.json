@@ -4,12 +4,26 @@
         "language": "Language",
         "not_set": "not set",
         "choose_option": "Choose what you want to change:",
+        "choose_language": "choose language:",
         "change_language": "Change language",
         "other_settings_not_implemented": "Other settings not yet implemented.",
         "back": "Back",
         "language_changed": "Language changed to {{language}}.",
         "coordinate": "your coordinates are "
     },
+    "languages": {
+        "ben": "বাংলা",
+        "chi": "中国人",
+        "eng": "English",
+        "fra": "Français",
+        "ger": "Deutsch",
+        "hin": "हिंदी",
+        "jpn": "日本語",
+        "kor": "한국인",
+        "por": "português",
+        "rus": "Русский",
+        "spa": "Spa Español"
+     },
     "start": {
         "welcome": {
             "message": "Welcome to our bot!",
@@ -33,8 +47,10 @@
         "send_location": "Send location",
         "enter_location_manually": "Enter location manually",
         "choose_option": "Choose an option:",
-        "enter_location": "Please enter your location for example: Moscow, Russia, Nikolskaya street",
-        "location_saved": "Your location has been saved: {{location}}"
+        "choose_language": "choose language:",
+        "enter_location": "Please enter your location for example: Country, City,  street",
+        "location_saved": "Your address: {{address}} has been successfully saved. Coordinates:",
+        "location_lost": "The coordinates were not found for the entered address. Please check the entered data."
     },
     "search": {
         "no_results": "product not found",
@@ -45,7 +61,8 @@
         "next": "next",
         "sort_ascending": "sort in ascending order",
         "sort_descending": "sort in descending order",
-        "open_product": "open product"
+        "open_product": "open product",
+        "enter_product_name": "enter product name"
     },
     "help": {
         "commands": "📜 *Available commands:*",
@@ -55,12 +72,14 @@
         "start_description": "Home page with commands",
         "help_description": "Description of commands and details",
         "contact_info": "📞 *Contact information:*",
-        "contact_info_test": "If you have any questions or need help, you can contact us at the following address: \n- Email: skytinleonid@gmail.com \n- Telegram: https://t.me/lcmertnicl ",
+        "contact_info_text": "If you have any questions or need help, you can contact us at the following address: \n- Email: skytinleonid@gmail.com \n- Telegram: https://t.me/lcmertnicl ",
         "thank_you": "*Thank you for using the bot!*"
     },
     "error": {
         "location_update": "There was an error updating your location.",
-        "command_execution": "Error executing command."
+        "command_execution": "Error executing command.",
+        "no_products": "products undefined"
+
     },
     "response": {
         "unknown_command": "Unknown command."

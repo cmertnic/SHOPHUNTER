@@ -1,0 +1,88 @@
+{
+    "settings": {
+        "current_settings": "Vos paramètres actuels",
+        "langue": "Langue",
+        "not_set": "non installé",
+        "choose_option": "Choisissez ce que vous souhaitez modifier :",
+        "choose_lingual": "choisir la langue :",
+        "change_langage": "Changer de langue",
+        "other_settings_not_implemented": "Les autres paramètres n'ont pas encore été implémentés.",
+        "back": "Retour",
+        "langage_changed": "La langue a été modifiée en {{language}}.",
+        "coordinate": "vos coordonnées"
+    },
+    "languages": {
+        "ben": "বাংলা",
+        "chi": "中国人",
+        "eng": "English",
+        "fra": "Français",
+        "ger": "Deutsch",
+        "hin": "हिंदी",
+        "jpn": "日本語",
+        "kor": "한국인",
+        "por": "português",
+        "rus": "Русский",
+        "spa": "Spa Español"
+     },
+    "start": {
+        "welcome": {
+            "message": "Bienvenue sur notre bot !",
+            "introduction": "Je suis là pour vous aider avec vos requêtes.",
+            "main_features": "Fonctionnalités principales",
+            "settings_command": "Paramètres",
+            "location_command": "Emplacement",
+            "help_command": "aide",
+            "search_command": "recherche",
+            "settings_command_description": "Vos paramètres locaux",
+            "location_command_description": "Votre emplacement",
+            "help_command_description": "support du bot et aide avec les commandes",
+            "search_command_description": "produit - recherche de produits"
+        },
+        "error": {
+            "general": "Une erreur s'est produite. Veuillez réessayer plus tard."
+        }
+    },
+    "location": {
+        "prompt": "Veuillez noter : la fonctionnalité de partage de position n'est disponible que dans l'application mobile Telegram. Vous pouvez saisir votre position manuellement.",
+        "send_location": "Envoyer l'emplacement",
+        "enter_location_manually": "Entrez l'emplacement manuellement",
+        "choose_option": "Choisir une option :",
+        "enter_location": "Veuillez entrer votre emplacement, par exemple : Pays, Ville, Rue",
+        "location_saved": "Votre adresse : {{address}} enregistrée avec succès. Coordonnées :",
+        "location_lost": "Les coordonnées n'ont pas été trouvées pour l'adresse que vous avez saisie. Veuillez vérifier vos entrées."
+    },
+    "recherche": {
+        "no_results": "produit introuvable",
+        "cost":"cost",
+        "de": "de",
+        "product": "produit",
+        "previous": "retour",
+        "next": "en avant",
+        "sort_ascending": "tri ascendant",
+        "sort_descending": "tri décroissant",
+        "open_product": "aller au produit",
+        "enter_product_name": "entrez le nom du produit"
+    },
+    "help": {
+        "commands": "📜 *Commandes disponibles :*",
+        "settings_description": "Changez votre langue ou votre géolocalisation",
+        "location_description": "Définissez ou modifiez votre emplacement.",
+        "search_description": "Rechercher des produits en utilisant /search item",
+        "start_description": "Page de démarrage avec commandes",
+        "help_description": "Descriptions et détails des commandes",
+        "contact_info": "📞 *Coordonnées :*",
+        "contact_info_text": "Si vous avez des questions ou avez besoin d'aide, vous pouvez nous contacter à l'adresse suivante :\n- Email : skytinleonid@gmail.com\n- Télégramme : https://t.me/lcmertnicl",
+        "thank_you": "*Merci d'utiliser le bot !*"
+    },
+    "error": {
+        "location_update": "Une erreur s'est produite lors de la mise à jour de votre position.",
+        "command_execution": "Une erreur s'est produite lors de l'exécution de la commande.",
+        "no_products": "Aucun produit trouvé"
+    },
+    "response": {
+        "unknown_command": "Commande inconnue."
+    },
+    "menu": {
+        "loading": "Chargement en cours..."
+    }
+}

@@ -6,7 +6,7 @@ module.exports = {
     async execute(bot, chatId, userId) {
         try {
             const userSettings = await getUserSettings(userId);
-            await updateI18nextLanguage(chatId, userSettings.language || 'rus');
+            await updateI18nextLanguage(chatId, userSettings.language || 'eng');
 
             const welcomeMessage = `
                 ${i18next.t('start.welcome.message')} 🎉

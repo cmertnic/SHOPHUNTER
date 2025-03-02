@@ -1,0 +1,88 @@
+{
+    "settings": {
+        "current_settings": "您当前的设置",
+        "language": "语言",
+        "not_set": "未安装",
+        "choose_option": "选择您要更改的内容:",
+        "choose_language": "选择语言:",
+        "change_language": "更改语言",
+        "other_settings_not_implemented": "其他设置尚未实施。",
+        "back": "返回",
+        "language_changed": "语言已更改为 {{language}}。",
+        "coordinate": "你的坐标"
+    },
+    "languages": {
+        "ben": "বাংলা",
+        "chi": "中国人",
+        "eng": "English",
+        "fra": "Français",
+        "ger": "Deutsch",
+        "hin": "हिंदी",
+        "jpn": "日本語",
+        "kor": "한국인",
+        "por": "português",
+        "rus": "Русский",
+        "spa": "Spa Español"
+     },
+    "start": {
+        "welcome": {
+            "message": "欢迎使用我们的机器人！",
+            "introduction": "我来这里是为了帮助您解答疑问。",
+            "main_features": "主要特点",
+            "settings_command": "设置",
+            "location_command": "位置",
+            "help_command": "帮助",
+            "search_command": "搜索",
+            "settings_command_description": "您的本地设置",
+            "location_command_description": "您的位置",
+            "help_command_description": "机器人支持和命令帮助",
+            "search_command_description": "产品 - 产品搜索"
+        },
+        "error": {
+            "general": "发生错误,请稍后重试。"
+        }
+    },
+    "location": {
+        "prompt": "请注意:位置共享功能仅在 Telegram 移动应用中可用。您可以手动输入您的位置。",
+        "send_location": "发送位置",
+        "enter_location_manually": "手动输入位置",
+        "choose_option": "选择选项:",
+        "enter_location": "请输入您的位置,例如:国家、城市、街道",
+        "location_saved": "您的地址:{{address}}已成功保存。坐标:",
+        "location_lost": "未找到您输入的地址的坐标。请检查您的输入。"
+    },
+    "search": {
+        "no_results": "未找到产品",
+        "cost": "价格",
+        "of": "来自",
+        "product": "产品",
+        "previous": "后一个",
+        "next": "前进",
+        "sort_ascending": "升序排序",
+        "sort_descending": "降序排序",
+        "open_product": "转到产品",
+        "enter_product_name": "输入产品名称"
+    },
+    "help": {
+        "commands": "📜 *可用命令:*",
+        "settings_description": "更改您的语言或地理位置",
+        "location_description": "设置或更改您的位置。",
+        "search_description": "使用/search item 搜索产品",
+        "start_description": "带有命令的起始页",
+        "help_description": "命令描述和详细信息",
+        "contact_info": "📞 *联系方式:*",
+        "contact_info_text": "如果您有疑问或需要帮助,可以通过以下地址联系我们:\n- 电子邮件:skytinleonid@gmail.com \n- 电报:https://t.me/lcmertnicl",
+        "thank_you": "*感谢您使用该机器人！*"
+    },
+    "error": {
+        "location_update": "更新您的位置时出错。",
+        "command_execution": "执行命令时出错。",
+        "no_products": "未找到产品"
+    },
+    "response": {
+        "unknown_command": "未知命令。"
+    },
+    "menu": {
+        "loading": "加载中..."
+    }
+}

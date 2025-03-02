@@ -1,0 +1,88 @@
+{
+    "settings": {
+        "current_settings": "現在の設定",
+        "language": "言語",
+        "not_set": "インストールされていません",
+        "choose_option": "変更する内容を選択してください:",
+        "choose_ language": "言語を選択:",
+        "change_ language": "言語を変更",
+        "other_settings_not_implemented": "他の設定はまだ実装されていません。",
+        "戻る": "戻る",
+        " language_changed ": "言語は {{language}} に変更されました。",
+        "coordinate": "あなたの座標"
+    },
+    "languages": {
+        "ben": "বাংলা",
+        "chi": "中国人",
+        "eng": "English",
+        "fra": "Français",
+        "ger": "Deutsch",
+        "hin": "हिंदी",
+        "jpn": "日本語",
+        "kor": "한국인",
+        "por": "português",
+        "rus": "Русский",
+        "spa": "Spa Español"
+     },
+    "start": {
+        "welcome": {
+            "message": "ボットへようこそ!",
+            "introduction": "あなたの質問にお答えするためにここにいます。",
+            "main_features": "主な機能",
+            "settings_command": "設定",
+            "location_command": "場所",
+            "help_command": "ヘルプ",
+            "search_command": "検索",
+            "settings_command_description": "ローカル設定",
+            "location_command_description": "あなたの位置情報",
+            "help_command_description": "ボットのサポートとコマンドのヘルプ",
+            "search_command_description": "製品 - 製品検索"
+        },
+        "error": {
+            "general": "エラーが発生しました。後でもう一度お試しください。"
+        }
+    },
+    "location": {
+        "prompt": "注意してください: 位置情報共有機能は Telegram モバイル アプリでのみ利用可能です。位置情報は手動で入力できます。",
+        "send_location": "位置情報を送信",
+        "enter_location_manually": "場所を手動で入力します",
+        "choose_option": "オプションを選択:",
+        "enter_location": "所在地を入力してください。例:国、都市、番地",
+        "location_saved": "あなたの住所: {{address}} は正常に保存されました。座標:",
+        "location_lost": "入力した住所の座標が見つかりませんでした。入力内容を確認してください。"
+    },
+    "search": {
+        "no_results": "製品が見つかりません",
+        "cost": "価格",
+        "of": "から",
+        "product": "製品",
+        "previous": "戻る",
+        "next": "前へ",
+        "sort_ascending": "昇順で並べ替え",
+        "sort_descending": "降順で並べ替え",
+        "open_product": "製品に移動",
+        "enter_product_name": "製品名を入力してください"
+    },
+    "help": {
+        "commands": "📜 *利用可能なコマンド:*",
+        "settings_description": "言語または地理位置情報を変更します",
+        "location_description": "場所を設定または変更します。",
+        "search_description": "/search item を使用して製品を検索します",
+        "start_description": "コマンドを含むページの開始",
+        "help_description": "コマンドの説明と詳細",
+        "contact_info": "📞 *連絡先情報:*",
+        "contact_info_text": "ご質問がある場合、またはサポートが必要な場合は、次のアドレスにご連絡ください: \n- 電子メール: skytinleonid@gmail.com \n- 電報: https://t.me/lcmertnicl",
+        "thank_you": "*ボットをご利用いただきありがとうございます!*"
+    },
+    "error": {
+        "location_update": "位置情報の更新中にエラーが発生しました。",
+        "command_execution": "コマンドの実行中にエラーが発生しました。",
+        "no_products": "製品が見つかりませんでした"
+    },
+    "response": {
+        "unknown_command": "不明なコマンドです。"
+    },
+    "menu": {
+        "loading": "読み込み中..."
+    }
+}

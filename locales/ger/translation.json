@@ -1,0 +1,88 @@
+{
+    "settings": {
+        "current_settings": "Ihre aktuellen Einstellungen",
+        "language": "Sprache",
+        "not_set": "nicht installiert",
+        "choose_option": "Wählen Sie aus, was Sie ändern möchten:",
+        "choose_language": "Sprache auswählen:",
+        "change_language": "Sprache ändern",
+        "other_settings_not_implemented": "Andere Einstellungen wurden noch nicht implementiert.",
+        "back": "Zurück",
+        "Language_changed": "Die Sprache wurde in {{language}} geändert.",
+        "coordinate": "Ihre Koordinaten"
+    },
+    "languages": {
+        "ben": "বাংলা",
+        "chi": "中国人",
+        "eng": "English",
+        "fra": "Français",
+        "ger": "Deutsch",
+        "hin": "हिंदी",
+        "jpn": "日本語",
+        "kor": "한국인",
+        "por": "português",
+        "rus": "Русский",
+        "spa": "Spa Español"
+     },
+    "Start": {
+        "welcome": {
+            "message": "Willkommen bei unserem Bot!",
+            "introduction": "Ich bin hier, um Ihnen bei Ihren Fragen zu helfen.",
+            "main_features": "Hauptfunktionen",
+            "settings_command": "Einstellungen",
+            "location_command": "Standort",
+            "help_command": "help",
+            "search_command": "suchen",
+            "settings_command_description": "Ihre lokalen Einstellungen",
+            "location_command_description": "Ihr Standort",
+            "help_command_description": "Bot-Unterstützung und Hilfe bei Befehlen",
+            "search_command_description": "Produkt – Produktsuche"
+        },
+        "error": {
+            "general": "Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal."
+        }
+    },
+    "location": {
+        "prompt": "Bitte beachten Sie: Die Standortfreigabefunktion ist nur in der mobilen Telegram-App verfügbar. Sie können Ihren Standort manuell eingeben.",
+        "send_location": "Standort senden",
+        "enter_location_manually": "Standort manuell eingeben",
+        "choose_option": "Option auswählen:",
+        "enter_location": "Bitte geben Sie Ihren Standort ein, zum Beispiel: Land, Stadt, Straße",
+        "location_saved": "Ihre Adresse: {{address}} erfolgreich gespeichert. Koordinaten:",
+        "location_lost": "Die Koordinaten wurden für die von Ihnen eingegebene Adresse nicht gefunden. Bitte überprüfen Sie Ihre Eingaben."
+    },
+    "search": {
+        "no_results": "Produkt nicht gefunden",
+        "cost": "Preis",
+        "of": "von",
+        "product": "Produkt",
+        "previous": "zurück",
+        "next": "vorwärts",
+        "sort_ascending": "aufsteigend sortieren",
+        "sort_descending": "absteigend sortieren",
+        "open_product": "gehe zum Produkt",
+        "enter_product_name": "Produktnamen eingeben"
+    },
+    "help": {
+        "commands": "📜 *Verfügbare Befehle:*",
+        "settings_description": "Ändern Sie Ihre Sprache oder Ihren Standort",
+        "location_description": "Stellen Sie Ihren Standort ein oder ändern Sie ihn.",
+        "search_description": "Suchen Sie nach Produkten mit /search item",
+        "start_description": "Startseite mit Befehlen",
+        "help_description": "Befehlsbeschreibungen und Details",
+        "contact_info": "📞 *Kontaktinformationen:*",
+        "contact_info_text": "Wenn Sie Fragen haben oder Hilfe benötigen, können Sie uns unter der folgenden Adresse kontaktieren:\n- E-Mail: skytinleonid@gmail.com\n- Telegramm: https://t.me/lcmertnicl",
+        "thank_you": "*Danke, dass Sie den Bot nutzen!*"
+    },
+    "error": {
+        "location_update": "Beim Aktualisieren Ihres Standorts ist ein Fehler aufgetreten.",
+        "command_execution": "Beim Ausführen des Befehls ist ein Fehler aufgetreten.",
+        "no_products": "Keine Produkte gefunden"
+    },
+    "response": {
+        "unknown_command": "Unbekannter Befehl."
+    },
+    "menu": {
+        "loading": "Laden..."
+    }
+}

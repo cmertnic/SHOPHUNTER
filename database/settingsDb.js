@@ -32,25 +32,6 @@ db.run(`CREATE TABLE IF NOT EXISTS user_settings (
   console.log('Таблица user_settings создана');
 });
 
-// Функция для сохранения настроек пользователя в базе данных
-function saveUserSettings(userId, settings) {
-  return new Promise((resolve, reject) => {
-    const { language, location } = settings;
-
-    db.run(`REPLACE INTO user_settings
-            (userId, language, location)
-            VALUES (?, ?, ?)`,
-      [userId, language, JSON.stringify(location)], (err) => {
-        if (err) {
-          console.error(`Ошибка при сохранении настроек пользователя: ${err.message}`);
-          reject(err);
-        } else {
-          console.log(`Настройки пользователя ${userId} сохранены`);
-          resolve();
-        }
-      });
-  });
-}
 
 // Функция для получения настроек пользователя из базы данных
 async function getUserSettings(userId) {
@@ -72,7 +53,7 @@ async function initializeDefaultUserSettings(userId) {
     const settings = await getUserSettings(userId);
     if (!settings.language) {
       const defaultSettings = {
-        language: process.env.LANGUAGE || 'rus',
+        language: process.env.LANGUAGE || 'eng',
         location: process.env.LOCATION || null, 
       };
 
@@ -108,6 +89,47 @@ async function updateUserSettings(userId, newSettings) {
     throw err;
   }
 }
+
+// Функция для сохранения настроек пользователя
+function saveUserSettings(userId, newSettings) {
+  return new Promise((resolve, reject) => {
+    // Получаем текущие настройки пользователя
+    db.get(`SELECT language, location FROM user_settings WHERE userId = ?`, [userId], (err, row) => {
+      if (err) {
+        console.error(`Ошибка при получении настроек пользователя: ${err.message}`);
+        return reject(err);
+      }
+
+      // Получаем текущие значения
+      const currentLanguage = row ? row.language : null;
+      const currentLocation = row ? JSON.parse(row.location) : null;
+
+      // Обновляем язык, если он передан
+      const updatedLanguage = newSettings.language !== undefined ? newSettings.language : currentLanguage;
+      // Обновляем местоположение, если оно передано
+      const updatedLocation = newSettings.location !== undefined ? newSettings.location : currentLocation;
+
+      // Проверяем, изменились ли данные
+      if (currentLanguage === updatedLanguage && JSON.stringify(currentLocation) === JSON.stringify(updatedLocation)) {
+        console.log(`Настройки пользователя ${userId} не изменились. Сохранение не требуется.`);
+        return resolve(); // Данные не изменились, ничего не делаем
+      }
+
+      // Если данные изменились, сохраняем новые настройки
+      db.run(`REPLACE INTO user_settings (userId, language, location) VALUES (?, ?, ?)`,
+        [userId, updatedLanguage, JSON.stringify(updatedLocation)], (err) => {
+          if (err) {
+            console.error(`Ошибка при сохранении настроек пользователя: ${err.message}`);
+            reject(err);
+          } else {
+            console.log(`Настройки пользователя ${userId} сохранены`);
+            resolve();
+          }
+        });
+    });
+  });
+}
+
 
 // Экспортируем функции для использования в других модулях
 module.exports = {
