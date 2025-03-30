@@ -112,7 +112,6 @@ bot.on('callback_query', async (query) => {
         // Получение доступных языков из директории locales
         const localesPath = path.join(__dirname, './locales');
         const availableLanguages = fs.readdirSync(localesPath).map(file => file.replace('.json', ''));
-        console.log(`Доступные языки: ${availableLanguages}`); 
 
         // Проверка, является ли нажатая кнопка выбором языка
         if (availableLanguages.includes(query.data)) {
