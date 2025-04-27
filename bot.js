@@ -13,18 +13,18 @@ if (!token) {
 }
 const bot = new TelegramBot(token, { polling: true });
 console.log('ShopHunter готов к работе');
-const commands = {};
-const commandFolders = fs.readdirSync(path.join(__dirname, 'commands'));
+const comands = {};
+const commandFolders = fs.readdirSync(path.join(__dirname, 'comands'));
 
 for (const folder of commandFolders) {
-    const commandFiles = fs.readdirSync(path.join(__dirname, 'commands', folder)).filter(file => file.endsWith('.js'));
+    const commandFiles = fs.readdirSync(path.join(__dirname, 'comands', folder)).filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
-        const command = require(path.join(__dirname, 'commands', folder, file));
+        const command = require(path.join(__dirname, 'comands', folder, file));
         if ('name' in command && 'execute' in command) {
-            commands[command.name] = command;
+            comands[command.name] = command;
             console.log(`Команда ${command.name} загружена из папки ${folder}.`);
         } else {
-            console.log(`Предупреждение! Команда по пути ./commands/${folder}/${file} потеряла свойство "name" или "execute".`);
+            console.log(`Предупреждение! Команда по пути ./comands/${folder}/${file} потеряла свойство "name" или "execute".`);
         }
     }
 }
@@ -47,17 +47,17 @@ bot.on('text', async (msg) => {
     try {
 
         if (messageText === i18next.t('settings.change_language')) {
-            await commands['/language'].execute(bot, chatId);
+            await comands['/language'].execute(bot, chatId);
         } else if (messageText === i18next.t('start.welcome.settings_command')) {
-            await commands['/settings'].execute(bot, chatId);
+            await comands['/settings'].execute(bot, chatId);
         } else if (messageText === i18next.t('start.welcome.help_command')) {
-            await commands['/help'].execute(bot, chatId);
+            await comands['/help'].execute(bot, chatId);
         } else if (messageText === i18next.t('start.welcome.search_command')) {
-            await commands['/search'].execute(bot, chatId);
+            await comands['/search'].execute(bot, chatId);
         } else if (messageText === i18next.t('start.welcome.location_command')) {
-            await commands['/location'].execute(bot, chatId, userId);
+            await comands['/location'].execute(bot, chatId, userId);
         } else if (messageText === i18next.t('settings.back')) {
-            await commands['/start'].execute(bot, chatId);
+            await comands['/start'].execute(bot, chatId);
         } else if (messageText === i18next.t('location.enter_location_manually')) {
             await bot.sendMessage(chatId, i18next.t('location.enter_location'));
         } else {
@@ -121,7 +121,7 @@ bot.on('callback_query', async (query) => {
                 console.log(`Смена языка на: ${query.data}`); 
                 userSession.language = query.data; 
                 await changeLanguage(bot, chatId, query.data); 
-                await commands['/language'].execute(bot, chatId);
+                await comands['/language'].execute(bot, chatId);
             }
             return; 
         }
@@ -193,12 +193,12 @@ bot.on('message', async (msg) => {
             const command = commandParts[0];
 
             if (command.startsWith('/')) {
-                if (commands[command]) {
+                if (comands[command]) {
                     if (command === '/search') {
                         if (commandParts.length > 1) {
                             // Если название товара передано в команде
                             const productName = commandParts.slice(1).join(' ');
-                            await commands[command].execute(bot, chatId, userId, productName);
+                            await comands[command].execute(bot, chatId, userId, productName);
                         } else {
                             // Если название товара не передано, запрашиваем его
                             await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
@@ -206,7 +206,7 @@ bot.on('message', async (msg) => {
                             userSessions[userId] = { awaitingProductName: true };
                         }
                     } else {
-                        await commands[command].execute(bot, chatId, userId);
+                        await comands[command].execute(bot, chatId, userId);
                     }
                     console.log(`Команда ${command} успешно выполнена для пользователя ${userId}.`);
                 } else {
@@ -218,7 +218,7 @@ bot.on('message', async (msg) => {
                 // Если бот ожидает название товара
                 const productName = msg.text.trim();
                 if (productName) {
-                    await commands['/search'].execute(bot, chatId, userId, productName);
+                    await comands['/search'].execute(bot, chatId, userId, productName);
                     // Сбрасываем состояние ожидания
                     delete userSessions[userId].awaitingProductName;
                 } else {

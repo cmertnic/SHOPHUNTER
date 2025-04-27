@@ -8,7 +8,7 @@ module.exports = {
 
         const response = `
         
-        ${i18next.t('help.commands')}
+        ${i18next.t('help.comands')}
 
         - /settings: ${i18next.t('help.settings_description')}
         - /location: ${i18next.t('help.location_description')}
