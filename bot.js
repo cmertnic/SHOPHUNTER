@@ -85,7 +85,6 @@ bot.on('callback_query', async (query) => {
     const chatId = query.message.chat.id;
     const userId = query.from.id;
 
-    console.log(`Received callback_query: ${query.data}`); 
     // Проверка на существование сессии
     if (!userSessions[userId]) {
         console.warn(`Сессия пользователя не найдена для userId: ${userId}. Создаем новую сессию.`);
@@ -214,18 +213,24 @@ bot.on('message', async (msg) => {
                     await bot.sendMessage(chatId, response);
                     console.log(`Неизвестная команда ${command} от пользователя ${userId}.`);
                 }
-            } else if (userSessions[userId]?.awaitingProductName) {
+            } else if (userSessions[userId]?.awaitingProductName || userSessions[userId]?.awaitingSearchAfterWelcome) {
                 // Если бот ожидает название товара
                 const productName = msg.text.trim();
                 if (productName) {
                     await comands['/search'].execute(bot, chatId, userId, productName);
                     // Сбрасываем состояние ожидания
                     delete userSessions[userId].awaitingProductName;
+                    delete userSessions[userId].awaitingSearchAfterWelcome;
                 } else {
                     await bot.sendMessage(chatId, 'Название товара не может быть пустым. Пожалуйста, введите название товара.');
                 }
             } else {
                 console.log(`Получено не текстовое сообщение от пользователя ${userId}`);
+            }
+
+            // Проверка на сообщение после start.welcome.search_command
+            if (msg.text === i18next.t('start.welcome.search_command')) {
+                userSessions[userId] = { awaitingSearchAfterWelcome: true };
             }
         }
     } catch (error) {
@@ -233,6 +238,7 @@ bot.on('message', async (msg) => {
         await bot.sendMessage(chatId, i18next.t('error.command_execution'));
     }
 });
+
 
 process.on('unhandledRejection', (error) => {
     console.error('Необработанное исключение:', error);
