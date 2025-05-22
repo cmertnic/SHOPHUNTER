@@ -1,10 +1,8 @@
-const { i18next, updateI18nextLanguage } = require('../../i18n');
+const { i18next } = require('../../i18n');
 const { getUserSettings } = require('../../database/settingsDb');
-const axios = require('axios');
 const {
   searchProductNearby,
   getUserLocation,
-  parsePrice,
   sendProductCard,
   updateProductCard
 } = require('../../events');
@@ -12,49 +10,58 @@ const userSessions = require('../../userSessions');
 
 module.exports = {
   name: '/search',
+
   execute: async (bot, chatId, userId, productName) => {
     const userSettings = await getUserSettings(userId);
 
-    // Создаем уникальную сессию для пользователя
     if (!userSessions[userId]) {
       userSessions[userId] = {
         products: [],
         currentIndex: 0,
         isProcessing: false,
         lastMessageId: null,
+        awaitingProductName: false,
       };
     }
 
     const userSession = userSessions[userId];
 
     try {
-      // Если название товара не указано, запрашиваем его
+      // Проверяем, если пользователь не ввел название товара
       if (!productName) {
         await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
+        userSession.awaitingProductName = true;
         return;
       }
 
-      const userLocation = await getUserLocation(userId);
-      const results = await searchProductNearby(productName, userLocation);
+      userSession.awaitingProductName = false;
 
-      if (!Array.isArray(results) || results.length === 0) {
-        console.error(`Результат поиска не является массивом или пуст: ${JSON.stringify(results)}`);
-        await bot.sendMessage(chatId, i18next.t('search.no_results'));
-        return;
+      let validProductFound = false;
+
+      while (!validProductFound) {
+        const userLocation = await getUserLocation(userId);
+        const results = await searchProductNearby(productName, userLocation);
+
+        if (!Array.isArray(results) || results.length === 0) {
+          await bot.sendMessage(chatId, i18next.t('search.no_results'));
+          await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
+          userSession.awaitingProductName = true;
+
+          return; 
+        }
+
+        validProductFound = true; 
+        userSession.products = results;
+        userSession.currentIndex = 0;
+
+        await sendProductCard(bot, chatId, userSession);
       }
-
-      userSession.products = results; // Сохраняем результаты в сессию
-      userSession.currentIndex = 0; // Сбрасываем индекс
-
-      // Отправляем первую карточку продукта
-      await sendProductCard(bot, chatId, userSession);
     } catch (error) {
-      console.error(`Ошибка при обработке команды /search для пользователя ${userId}: ${error.message}`);
+      console.error(`Ошибка при обработке команды /search для пользователя ${userId}:`, error);
       await bot.sendMessage(chatId, i18next.t('error.command_execution'));
     }
   },
 
-  // Функция для обработки действий пользователя (перелистывание)
   handleCallbackQuery: async (bot, chatId, userId, callbackData) => {
     const userSession = userSessions[userId];
 
@@ -69,13 +76,12 @@ module.exports = {
       } else if (callbackData === 'next') {
         userSession.currentIndex = Math.min(userSession.currentIndex + 1, userSession.products.length - 1);
       } else {
-        return; 
+        return;
       }
 
-      // Обновляем карточку продукта
       await updateProductCard(bot, chatId, userSession);
     } catch (error) {
-      console.error(`Ошибка при обработке callback для пользователя ${userId}: ${error.message}`);
+      console.error(`Ошибка при обработке callback для пользователя ${userId}:`, error);
       await bot.sendMessage(chatId, i18next.t('error.command_execution'));
     }
   },

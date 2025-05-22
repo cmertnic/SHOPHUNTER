@@ -93,7 +93,7 @@ bot.on('callback_query', async (query) => {
             isProcessing: false,
             currentIndex: 0,
             products: [],
-            language: userSettings ? userSettings.language : 'eng', 
+            language: userSettings ? userSettings.language : 'eng',
         };
     }
 
@@ -101,9 +101,9 @@ bot.on('callback_query', async (query) => {
 
     if (userSession.isProcessing) {
         console.warn(`Пользователь ${userId} уже обрабатывает запрос.`);
-        return; 
+        return;
     }
-    userSession.isProcessing = true; 
+    userSession.isProcessing = true;
 
     try {
         await bot.answerCallbackQuery(query.id);
@@ -117,12 +117,12 @@ bot.on('callback_query', async (query) => {
             if (userSession.language === query.data) {
                 console.log(`Настройки пользователя ${userId} не изменились. Сохранение не требуется.`);
             } else {
-                console.log(`Смена языка на: ${query.data}`); 
-                userSession.language = query.data; 
-                await changeLanguage(bot, chatId, query.data); 
+                console.log(`Смена языка на: ${query.data}`);
+                userSession.language = query.data;
+                await changeLanguage(bot, chatId, query.data);
                 await comands['/language'].execute(bot, chatId);
             }
-            return; 
+            return;
         }
 
         // Обработка навигации по продуктам (предыдущий, следующий и сортировка)
@@ -142,29 +142,29 @@ bot.on('callback_query', async (query) => {
 
                 case 'sort_asc':
                     userSession.products.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-                    userSession.currentIndex = 0; 
+                    userSession.currentIndex = 0;
                     break;
 
                 case 'sort_desc':
                     userSession.products.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-                    userSession.currentIndex = 0; 
+                    userSession.currentIndex = 0;
                     break;
 
                 default:
                     console.warn(`Неизвестный callback_data: ${query.data}`);
-                    return; 
+                    return;
             }
 
             await updateProductCard(bot, chatId, userSession);
         } else {
             console.warn(`Нет доступных продуктов для отображения для userId: ${userId}`);
-            await bot.sendMessage(chatId, i18next.t('error.no_products')); 
+            await bot.sendMessage(chatId, i18next.t('error.no_products'));
         }
     } catch (error) {
         console.error(`Ошибка при обработке callback_query: ${error.message}`);
-        await bot.sendMessage(chatId, i18next.t('error.callback_processing')); 
+        await bot.sendMessage(chatId, i18next.t('error.callback_processing'));
     } finally {
-        userSession.isProcessing = false; 
+        userSession.isProcessing = false;
     }
 });
 
@@ -190,18 +190,21 @@ bot.on('message', async (msg) => {
         if (typeof msg.text === 'string') {
             const commandParts = msg.text.split(' ');
             const command = commandParts[0];
+            const comandsToCancelSearch = ['/location', '/start', '/help', '/language', '/settings'];
 
             if (command.startsWith('/')) {
+                if (userSessions[userId]?.awaitingProductName) {
+                    console.log(`Режим ожидания названия товара сброшен для пользователя ${userId} из-за команды ${command}.`);
+                    delete userSessions[userId].awaitingProductName;
+                }
+
                 if (comands[command]) {
                     if (command === '/search') {
                         if (commandParts.length > 1) {
-                            // Если название товара передано в команде
                             const productName = commandParts.slice(1).join(' ');
                             await comands[command].execute(bot, chatId, userId, productName);
                         } else {
-                            // Если название товара не передано, запрашиваем его
                             await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
-                            // Устанавливаем состояние ожидания
                             userSessions[userId] = { awaitingProductName: true };
                         }
                     } else {
@@ -213,22 +216,17 @@ bot.on('message', async (msg) => {
                     await bot.sendMessage(chatId, response);
                     console.log(`Неизвестная команда ${command} от пользователя ${userId}.`);
                 }
-            } else if (userSessions[userId]?.awaitingProductName || userSessions[userId]?.awaitingSearchAfterWelcome) {
-                // Если бот ожидает название товара
+            } else if (userSessions[userId]?.awaitingProductName) {
                 const productName = msg.text.trim();
                 if (productName) {
                     await comands['/search'].execute(bot, chatId, userId, productName);
-                    // Сбрасываем состояние ожидания
-                    delete userSessions[userId].awaitingProductName;
-                    delete userSessions[userId].awaitingSearchAfterWelcome;
                 } else {
-                    await bot.sendMessage(chatId, 'Название товара не может быть пустым. Пожалуйста, введите название товара.');
+                    await bot.sendMessage(chatId, i18next.t('search.empty_product_name'));
                 }
             } else {
                 console.log(`Получено не текстовое сообщение от пользователя ${userId}`);
             }
 
-            // Проверка на сообщение после start.welcome.search_command
             if (msg.text === i18next.t('start.welcome.search_command')) {
                 userSessions[userId] = { awaitingSearchAfterWelcome: true };
             }
@@ -238,6 +236,7 @@ bot.on('message', async (msg) => {
         await bot.sendMessage(chatId, i18next.t('error.command_execution'));
     }
 });
+
 
 
 process.on('unhandledRejection', (error) => {
