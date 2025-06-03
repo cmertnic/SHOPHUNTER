@@ -93,7 +93,7 @@ bot.on('callback_query', async (query) => {
             isProcessing: false,
             currentIndex: 0,
             products: [],
-            language: userSettings ? userSettings.language : 'eng',
+            language: userSettings ? userSettings.language : 'rus',
         };
     }
 
@@ -179,12 +179,12 @@ bot.on('message', async (msg) => {
         const userSettings = await getUserSettings(userId);
 
         if (!userSettings.language) {
-            const defaultLanguage = process.env.LANGUAGE || 'eng';
+            const defaultLanguage = process.env.LANGUAGE || 'rus';
             await saveUserSettings(userId, { language: defaultLanguage });
             console.log(`Язык по умолчанию ${defaultLanguage} сохранен для пользователя ${userId}.`);
         }
 
-        await initializeI18next(userSettings.language || 'eng');
+        await initializeI18next(userSettings.language || 'rus');
         await updateI18nextLanguage(chatId);
 
         if (typeof msg.text === 'string') {
@@ -228,7 +228,7 @@ bot.on('message', async (msg) => {
             }
 
             if (msg.text === i18next.t('start.welcome.search_command')) {
-                userSessions[userId] = { awaitingSearchAfterWelcome: true };
+                await comands['/search'].execute(bot, chatId, userId);
             }
         }
     } catch (error) {
