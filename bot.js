@@ -6,13 +6,16 @@ const { initializeI18next, updateI18nextLanguage, i18next } = require('./i18n');
 const { getUserSettings, saveUserSettings, initializeDefaultUserSettings, updateUserLocation } = require('./database/settingsDb');
 const { handleTextMessage, changeLanguage, sendMainMenu, handleManualLocationInput, sendProductCard, parsePrice, updateProductCard } = require('./events');
 const userSessions = require('./userSessions');
+
 const token = process.env.TOKEN;
 if (!token) {
     console.error('Токен бота не найден. Убедитесь, что переменная TOKEN установлена в .env файле.');
     process.exit(1);
 }
+
 const bot = new TelegramBot(token, { polling: true });
 console.log('ShopHunter готов к работе');
+
 const comands = {};
 const commandFolders = fs.readdirSync(path.join(__dirname, 'comands'));
 
@@ -31,61 +34,8 @@ for (const folder of commandFolders) {
 
 bot.on('callback_query', async (query) => {
     const chatId = query.message.chat.id;
-    await bot.answerCallbackQuery(query.id);
-});
-
-bot.on('polling_error', (error) => {
-    console.error(`Ошибка при работе с ботом: ${error.message}`);
-});
-
-// Обработка текстовых сообщений
-bot.on('text', async (msg) => {
-    const chatId = msg.chat.id;
-    const userId = msg.from.id;
-    const messageText = msg.text;
-
-    try {
-
-        if (messageText === i18next.t('settings.change_language')) {
-            await comands['/language'].execute(bot, chatId);
-        } else if (messageText === i18next.t('start.welcome.settings_command')) {
-            await comands['/settings'].execute(bot, chatId);
-        } else if (messageText === i18next.t('start.welcome.help_command')) {
-            await comands['/help'].execute(bot, chatId);
-        } else if (messageText === i18next.t('start.welcome.search_command')) {
-            await comands['/search'].execute(bot, chatId);
-        } else if (messageText === i18next.t('start.welcome.location_command')) {
-            await comands['/location'].execute(bot, chatId, userId);
-        } else if (messageText === i18next.t('settings.back')) {
-            await comands['/start'].execute(bot, chatId);
-        } else if (messageText === i18next.t('location.enter_location_manually')) {
-            await bot.sendMessage(chatId, i18next.t('location.enter_location'));
-        } else {
-            const locationRegex = /^([а-яА-ЯёЁ\w\s]+),\s*([а-яА-ЯёЁ\w\s]+)(?:,\s*(.*))?$/;
-            const match = messageText.match(locationRegex);
-
-            if (match) {
-                await handleManualLocationInput(bot, msg, chatId, userId, messageText);
-            } else {
-                if (messageText) {
-                    await handleTextMessage(bot, chatId, messageText);
-                } else {
-                    console.error('messageText is undefined');
-                }
-            }
-        }
-    } catch (error) {
-        console.error(`Ошибка при обработке текстового сообщения: ${error.message}`);
-        await bot.sendMessage(chatId, i18next.t('error.command_execution'));
-    }
-});
-
-// Обработка callback_query
-bot.on('callback_query', async (query) => {
-    const chatId = query.message.chat.id;
     const userId = query.from.id;
 
-    // Проверка на существование сессии
     if (!userSessions[userId]) {
         console.warn(`Сессия пользователя не найдена для userId: ${userId}. Создаем новую сессию.`);
         const userSettings = await getUserSettings(userId);
@@ -108,11 +58,9 @@ bot.on('callback_query', async (query) => {
     try {
         await bot.answerCallbackQuery(query.id);
 
-        // Получение доступных языков из директории locales
         const localesPath = path.join(__dirname, './locales');
         const availableLanguages = fs.readdirSync(localesPath).map(file => file.replace('.json', ''));
 
-        // Проверка, является ли нажатая кнопка выбором языка
         if (availableLanguages.includes(query.data)) {
             if (userSession.language === query.data) {
                 console.log(`Настройки пользователя ${userId} не изменились. Сохранение не требуется.`);
@@ -125,7 +73,6 @@ bot.on('callback_query', async (query) => {
             return;
         }
 
-        // Обработка навигации по продуктам (предыдущий, следующий и сортировка)
         if (userSession.products.length > 0) {
             switch (query.data) {
                 case 'prev':
@@ -168,8 +115,11 @@ bot.on('callback_query', async (query) => {
     }
 });
 
+bot.on('polling_error', (error) => {
+    console.error(`Ошибка при работе с ботом: ${error.message}`);
+});
 
-// Обработка входящих сообщений
+// Обработка входящих сообщений (текст и др.)
 bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const userId = msg.from.id;
@@ -188,15 +138,52 @@ bot.on('message', async (msg) => {
         await updateI18nextLanguage(chatId);
 
         if (typeof msg.text === 'string') {
-            const commandParts = msg.text.split(' ');
-            const command = commandParts[0];
-            const comandsToCancelSearch = ['/location', '/start', '/help', '/language', '/settings'];
+            const text = msg.text.trim();
 
-            if (command.startsWith('/')) {
+            // Обработка локализованных команд
+            const localizedCommandsMap = {
+                [i18next.t('start.welcome.search_command')]: '/search',
+                [i18next.t('start.welcome.settings_command')]: '/settings',
+                [i18next.t('start.welcome.help_command')]: '/help',
+                [i18next.t('settings.change_language')]: '/language',
+                [i18next.t('start.welcome.location_command')]: '/location',
+                [i18next.t('settings.back')]: '/start',
+            };
+
+            // Проверяем локализованную команду
+            const commandFromLocalized = localizedCommandsMap[text];
+
+            if (commandFromLocalized) {
                 if (userSessions[userId]?.awaitingProductName) {
-                    console.log(`Режим ожидания названия товара сброшен для пользователя ${userId} из-за команды ${command}.`);
+                    console.log(`Режим ожидания названия товара сброшен для пользователя ${userId} из-за команды ${commandFromLocalized}.`);
                     delete userSessions[userId].awaitingProductName;
                 }
+
+                if (comands[commandFromLocalized]) {
+                    if (commandFromLocalized === '/search') {
+                        await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
+                        userSessions[userId] = userSessions[userId] || {};
+                        userSessions[userId].awaitingProductName = true;
+                    } else {
+                        await comands[commandFromLocalized].execute(bot, chatId, userId);
+                    }
+                    console.log(`Команда ${commandFromLocalized} успешно выполнена для пользователя ${userId}.`);
+                } else {
+                    await bot.sendMessage(chatId, i18next.t('response.unknown_command'));
+                    console.log(`Неизвестная команда ${commandFromLocalized} от пользователя ${userId}.`);
+                }
+                return;
+            }
+
+            // Если текст начинается с '/', это команда
+            if (text.startsWith('/')) {
+                if (userSessions[userId]?.awaitingProductName) {
+                    console.log(`Режим ожидания названия товара сброшен для пользователя ${userId} из-за команды ${text}.`);
+                    delete userSessions[userId].awaitingProductName;
+                }
+
+                const commandParts = text.split(' ');
+                const command = commandParts[0];
 
                 if (comands[command]) {
                     if (command === '/search') {
@@ -205,38 +192,59 @@ bot.on('message', async (msg) => {
                             await comands[command].execute(bot, chatId, userId, productName);
                         } else {
                             await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
-                            userSessions[userId] = { awaitingProductName: true };
+                            userSessions[userId] = userSessions[userId] || {};
+                            userSessions[userId].awaitingProductName = true;
                         }
                     } else {
                         await comands[command].execute(bot, chatId, userId);
                     }
                     console.log(`Команда ${command} успешно выполнена для пользователя ${userId}.`);
                 } else {
-                    const response = `${i18next.t('response.unknown_command')} ${msg.text}`;
+                    const response = `${i18next.t('response.unknown_command')} ${text}`;
                     await bot.sendMessage(chatId, response);
                     console.log(`Неизвестная команда ${command} от пользователя ${userId}.`);
                 }
-            } else if (userSessions[userId]?.awaitingProductName) {
-                const productName = msg.text.trim();
+                return;
+            }
+
+            // Если пользователь в режиме ожидания названия продукта
+            if (userSessions[userId]?.awaitingProductName) {
+                const productName = text;
                 if (productName) {
-                    await comands['/search'].execute(bot, chatId, userId, productName);
+                    const found = await comands['/search'].execute(bot, chatId, userId, productName);
+                    if (found) {
+                        delete userSessions[userId].awaitingProductName;
+                    } 
                 } else {
                     await bot.sendMessage(chatId, i18next.t('search.empty_product_name'));
                 }
-            } else {
-                console.log(`Получено не текстовое сообщение от пользователя ${userId}`);
+                return;
             }
 
-            if (msg.text === i18next.t('start.welcome.search_command')) {
-                await comands['/search'].execute(bot, chatId, userId);
+            // Обработка ввода местоположения вручную
+            if (text === i18next.t('location.enter_location_manually')) {
+                await bot.sendMessage(chatId, i18next.t('location.enter_location'));
+                return;
             }
+
+            // Проверка формата локации (например, "Город, Регион")
+            const locationRegex = /^([а-яА-ЯёЁ\w\s]+),\s*([а-яА-ЯёЁ\w\s]+)(?:,\s*(.*))?$/;
+            const match = text.match(locationRegex);
+
+            if (match) {
+                await handleManualLocationInput(bot, msg, chatId, userId, text);
+                return;
+            }
+
+            // Если текст не команда, не в режиме ожидания и не локация — можно обработать как обычный текст
+            console.log(`Получено нераспознанное текстовое сообщение от пользователя ${userId}: ${text}`);
+            // Здесь можно добавить дополнительную обработку обычных сообщений, если нужно
         }
     } catch (error) {
         console.error(`Ошибка при обработке сообщения: ${error.message}`);
         await bot.sendMessage(chatId, i18next.t('error.command_execution'));
     }
 });
-
 
 
 process.on('unhandledRejection', (error) => {
@@ -252,4 +260,3 @@ process.on('unhandledRejection', (error) => {
         console.error('Ошибка при запуске бота:', error);
     }
 })();
-

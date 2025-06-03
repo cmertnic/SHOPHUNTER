@@ -21,44 +21,41 @@ module.exports = {
         isProcessing: false,
         lastMessageId: null,
         awaitingProductName: false,
+        language: userSettings?.language || 'rus',
       };
     }
 
     const userSession = userSessions[userId];
 
     try {
-      // Проверяем, если пользователь не ввел название товара
-      if (!productName) {
+      if (!productName || productName.trim() === '') {
         await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
         userSession.awaitingProductName = true;
-        return;
+        return false;
       }
 
       userSession.awaitingProductName = false;
 
-      let validProductFound = false;
+      const userLocation = await getUserLocation(userId);
+      const results = await searchProductNearby(productName, userLocation);
 
-      while (!validProductFound) {
-        const userLocation = await getUserLocation(userId);
-        const results = await searchProductNearby(productName, userLocation);
-
-        if (!Array.isArray(results) || results.length === 0) {
-          await bot.sendMessage(chatId, i18next.t('search.no_results'));
-          await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
-          userSession.awaitingProductName = true;
-
-          return; 
-        }
-
-        validProductFound = true; 
-        userSession.products = results;
-        userSession.currentIndex = 0;
-
-        await sendProductCard(bot, chatId, userSession);
+      if (!Array.isArray(results) || results.length === 0) {
+        await bot.sendMessage(chatId, i18next.t('search.no_results'));
+        await bot.sendMessage(chatId, i18next.t('search.enter_product_name'));
+        userSession.awaitingProductName = true;
+        return false;
       }
+
+      userSession.products = results;
+      userSession.currentIndex = 0;
+
+      await sendProductCard(bot, chatId, userSession);
+      return true;
+
     } catch (error) {
       console.error(`Ошибка при обработке команды /search для пользователя ${userId}:`, error);
       await bot.sendMessage(chatId, i18next.t('error.command_execution'));
+      return false;
     }
   },
 
